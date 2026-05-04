@@ -1,0 +1,282 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Tamil Learning App</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        background: #f4f6f8;
+        margin: 0;
+        text-align: center;
+      }
+
+      h1 {
+        background: #4caf50;
+        color: white;
+        padding: 15px;
+        margin: 0;
+      }
+
+      .controls {
+        margin: 20px;
+      }
+
+      input,
+      select {
+        padding: 8px;
+        margin: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        padding: 8px 12px;
+        margin: 5px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #4caf50;
+        color: white;
+      }
+
+      .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        padding: 10px;
+      }
+
+      .card {
+        background: white;
+        padding: 15px;
+        width: 140px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .card:hover {
+        transform: scale(1.05);
+        background: #e8f5e9;
+      }
+
+      .tamil {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .english {
+        color: gray;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>📚 Tamil Learning App</h1>
+
+    <!-- Add Data -->
+    <div class="controls">
+      <input type="text" id="tamilInput" placeholder="Tamil text" />
+      <button onclick="startListening('tamil')">🎤 Tamil</button>
+
+      <input type="text" id="englishInput" placeholder="English meaning" />
+      <button onclick="startListening('english')">🎤 English</button>
+
+      <br />
+
+      <select id="typeInput">
+        <option value="number">Number</option>
+        <option value="word">Word</option>
+        <option value="sentence">Sentence</option>
+      </select>
+
+      <button onclick="addItem()">Add</button>
+    </div>
+
+    <!-- Search + Filter -->
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search..." />
+
+      <button onclick="filterCategory('all')">All</button>
+      <button onclick="filterCategory('number')">Numbers</button>
+      <button onclick="filterCategory('word')">Words</button>
+      <button onclick="filterCategory('sentence')">Sentences</button>
+    </div>
+
+    <!-- Cards -->
+    <div class="card-container" id="cardContainer"></div>
+
+    <script>
+      // ---------- LOAD DATA ----------
+      let data = JSON.parse(localStorage.getItem("tamilData")) || [];
+
+      // ---------- SAVE ----------
+      function saveData() {
+        localStorage.setItem("tamilData", JSON.stringify(data));
+      }
+
+      // ---------- INITIAL DATA ----------
+      if (data.length === 0) {
+        let numbers = [
+          "ஒன்று",
+          "இரண்டு",
+          "மூன்று",
+          "நான்கு",
+          "ஐந்து",
+          "ஆறு",
+          "ஏழு",
+          "எட்டு",
+          "ஒன்பது",
+          "பத்து",
+        ];
+
+        numbers.forEach((num, index) => {
+          data.push({
+            tamil: num,
+            english: (index + 1).toString(),
+            type: "number",
+          });
+        });
+
+        saveData();
+      }
+
+      // ---------- ADD ITEM ----------
+      function addItem() {
+        let tamil = document.getElementById("tamilInput").value.trim();
+        let english = document.getElementById("englishInput").value.trim();
+        let type = document.getElementById("typeInput").value;
+
+        if (!tamil || !english) {
+          alert("Enter both Tamil and English");
+          return;
+        }
+
+        data.push({ tamil, english, type });
+
+        saveData();
+        renderCards();
+
+        document.getElementById("tamilInput").value = "";
+        document.getElementById("englishInput").value = "";
+      }
+
+      // ---------- VOICE INPUT ----------
+      function startListening(type) {
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+          alert("Speech Recognition not supported");
+          return;
+        }
+
+        const recognition = new SpeechRecognition();
+
+        // Set language based on button
+        recognition.lang = type === "tamil" ? "ta-IN" : "en-US";
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.start();
+
+        recognition.onstart = () => {
+          console.log("🎤 Listening...");
+        };
+
+        recognition.onresult = (event) => {
+          let spokenText = event.results[0][0].transcript;
+
+          if (type === "tamil") {
+            document.getElementById("tamilInput").value = spokenText;
+          } else {
+            document.getElementById("englishInput").value = spokenText;
+          }
+        };
+
+        recognition.onspeechend = () => {
+          recognition.stop();
+        };
+
+        recognition.onerror = (event) => {
+          if (event.error === "no-speech") {
+            alert("No speech detected. Try again.");
+          } else if (event.error === "network") {
+            alert("Network error. Use Live Server + check internet.");
+          } else {
+            console.error("Error:", event.error);
+          }
+        };
+      }
+
+      // ---------- FILTER ----------
+      let currentFilter = "all";
+
+      function filterCategory(type) {
+        currentFilter = type;
+        renderCards();
+      }
+
+      // ---------- RENDER ----------
+      function renderCards() {
+        let container = document.getElementById("cardContainer");
+        let searchText = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+
+        container.innerHTML = "";
+
+        data.forEach((item) => {
+          if (
+            (currentFilter === "all" || item.type === currentFilter) &&
+            (item.tamil.includes(searchText) ||
+              item.english.toLowerCase().includes(searchText))
+          ) {
+            let card = document.createElement("div");
+            card.className = "card";
+
+            card.onclick = () => speakTamil(item.tamil);
+
+            card.innerHTML = `
+                <div class="tamil">${item.tamil}</div>
+                <div class="english">${item.english}</div>
+            `;
+
+            container.appendChild(card);
+          }
+        });
+      }
+
+      // ---------- SPEECH ----------
+      function speakTamil(text) {
+        // Try Google TTS first
+        const url =
+          "https://translate.google.com/translate_tts?ie=UTF-8&q=" +
+          encodeURIComponent(text) +
+          "&tl=ta&client=tw-ob";
+
+        const audio = new Audio(url);
+
+        audio.play().catch(() => {
+          // Fallback if blocked
+          let speech = new SpeechSynthesisUtterance(text);
+          speech.lang = "ta-IN";
+          speechSynthesis.speak(speech);
+        });
+      }
+
+      // ---------- SEARCH ----------
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", renderCards);
+
+      // ---------- INITIAL LOAD ----------
+      renderCards();
+    </script>
+  </body>
+</html>
