@@ -1,282 +1,312 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Tamil Learning App</title>
+<head>
+  <title>Tamil Learning App - AI Upgrade</title>
 
-    <style>
-      body {
-        font-family: Arial;
-        background: #f4f6f8;
-        margin: 0;
-        text-align: center;
-      }
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      margin: 0;
+      text-align: center;
+    }
 
-      h1 {
-        background: #4caf50;
-        color: white;
-        padding: 15px;
-        margin: 0;
-      }
+    h1 {
+      background: #4caf50;
+      color: white;
+      padding: 15px;
+      margin: 0;
+    }
 
-      .controls {
-        margin: 20px;
-      }
+    .controls {
+      margin: 20px;
+    }
 
-      input,
-      select {
-        padding: 8px;
-        margin: 5px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
+    input,
+    select {
+      padding: 8px;
+      margin: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
 
-      button {
-        padding: 8px 12px;
-        margin: 5px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        background: #4caf50;
-        color: white;
-      }
+    button {
+      padding: 8px 12px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #4caf50;
+      color: white;
+    }
 
-      .card-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        padding: 10px;
-      }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      padding: 10px;
+    }
 
-      .card {
-        background: white;
-        padding: 15px;
-        width: 140px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: 0.3s;
-      }
+    .card {
+      background: white;
+      padding: 15px;
+      width: 160px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
 
-      .card:hover {
-        transform: scale(1.05);
-        background: #e8f5e9;
-      }
+    .tamil {
+      font-size: 18px;
+      font-weight: bold;
+    }
 
-      .tamil {
-        font-size: 18px;
-        font-weight: bold;
-      }
+    .english {
+      color: gray;
+      font-size: 14px;
+    }
 
-      .english {
-        color: gray;
-        font-size: 14px;
-      }
-    </style>
-  </head>
+    .deleteBtn {
+      margin-top: 8px;
+      background: red;
+    }
+  </style>
+</head>
 
-  <body>
-    <h1>📚 Tamil Learning App</h1>
+<body>
 
-    <!-- Add Data -->
-    <div class="controls">
-      <input type="text" id="tamilInput" placeholder="Tamil text" />
-      <button onclick="startListening('tamil')">🎤 Tamil</button>
+<h1>📚 AI Tamil Learning App</h1>
 
-      <input type="text" id="englishInput" placeholder="English meaning" />
-      <button onclick="startListening('english')">🎤 English</button>
+<!-- INPUT -->
+<div class="controls">
 
-      <br />
+  <input type="text" id="tamilInput" placeholder="Tamil text">
+  <button onclick="startListening('tamil')">🎤 Tamil</button>
 
-      <select id="typeInput">
-        <option value="number">Number</option>
-        <option value="word">Word</option>
-        <option value="sentence">Sentence</option>
-      </select>
+  <input type="text" id="englishInput" placeholder="English text">
+  <button onclick="startListening('english')">🎤 English</button>
 
-      <button onclick="addItem()">Add</button>
-    </div>
+  <br>
 
-    <!-- Search + Filter -->
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="Search..." />
+  <select id="typeInput">
+    <option value="number">Number</option>
+    <option value="word">Word</option>
+    <option value="sentence">Sentence</option>
+  </select>
 
-      <button onclick="filterCategory('all')">All</button>
-      <button onclick="filterCategory('number')">Numbers</button>
-      <button onclick="filterCategory('word')">Words</button>
-      <button onclick="filterCategory('sentence')">Sentences</button>
-    </div>
+  <button onclick="addItem()">Add</button>
 
-    <!-- Cards -->
-    <div class="card-container" id="cardContainer"></div>
+</div>
 
-    <script>
-      // ---------- LOAD DATA ----------
-      let data = JSON.parse(localStorage.getItem("tamilData")) || [];
+<!-- SEARCH -->
+<div class="controls">
+  <input type="text" id="searchInput" placeholder="Search...">
 
-      // ---------- SAVE ----------
-      function saveData() {
-        localStorage.setItem("tamilData", JSON.stringify(data));
-      }
+  <button onclick="filterCategory('all')">All</button>
+  <button onclick="filterCategory('number')">Numbers</button>
+  <button onclick="filterCategory('word')">Words</button>
+  <button onclick="filterCategory('sentence')">Sentences</button>
+</div>
 
-      // ---------- INITIAL DATA ----------
-      if (data.length === 0) {
-        let numbers = [
-          "ஒன்று",
-          "இரண்டு",
-          "மூன்று",
-          "நான்கு",
-          "ஐந்து",
-          "ஆறு",
-          "ஏழு",
-          "எட்டு",
-          "ஒன்பது",
-          "பத்து",
-        ];
+<!-- CARDS -->
+<div class="card-container" id="cardContainer"></div>
 
-        numbers.forEach((num, index) => {
-          data.push({
-            tamil: num,
-            english: (index + 1).toString(),
-            type: "number",
-          });
-        });
+<script>
 
-        saveData();
-      }
+// ================= DATA =================
+let data = JSON.parse(localStorage.getItem("tamilData")) || [];
 
-      // ---------- ADD ITEM ----------
-      function addItem() {
-        let tamil = document.getElementById("tamilInput").value.trim();
-        let english = document.getElementById("englishInput").value.trim();
-        let type = document.getElementById("typeInput").value;
+// ================= SAVE =================
+function saveData() {
+  localStorage.setItem("tamilData", JSON.stringify(data));
+}
 
-        if (!tamil || !english) {
-          alert("Enter both Tamil and English");
-          return;
-        }
+// ================= INITIAL DATA =================
+if (data.length === 0) {
+  let numbers = ["ஒன்று","இரண்டு","மூன்று","நான்கு","ஐந்து","ஆறு","ஏழு","எட்டு","ஒன்பது","பத்து"];
 
-        data.push({ tamil, english, type });
+  numbers.forEach((num, i) => {
+    data.push({
+      tamil: num,
+      english: (i + 1).toString(),
+      type: "number"
+    });
+  });
 
-        saveData();
-        renderCards();
+  saveData();
+}
 
-        document.getElementById("tamilInput").value = "";
-        document.getElementById("englishInput").value = "";
-      }
+// ================= 🗑️ DELETE =================
+function deleteItem(index) {
+  if (confirm("Delete this item?")) {
+    data.splice(index, 1);
+    saveData();
+    renderCards();
+  }
+}
 
-      // ---------- VOICE INPUT ----------
-      function startListening(type) {
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
+// ================= 🌍 TRANSLATION =================
+async function translateText(text, from, to) {
+  try {
+    let res = await fetch(
+      `https://api.mymemory.translated.net/get?q=${text}&langpair=${from}|${to}`
+    );
 
-        if (!SpeechRecognition) {
-          alert("Speech Recognition not supported");
-          return;
-        }
+    let data = await res.json();
 
-        const recognition = new SpeechRecognition();
+    return data.responseData.translatedText;
+  } catch {
+    return text;
+  }
+}
 
-        // Set language based on button
-        recognition.lang = type === "tamil" ? "ta-IN" : "en-US";
+// ================= 🧠 GRAMMAR FIX (AI STYLE) =================
+function basicGrammarFix(text) {
+  return text
+    .replace(/\bi\b/g, "I")
+    .replace(/^./, c => c.toUpperCase())
+    .trim();
+}
 
-        recognition.continuous = false;
-        recognition.interimResults = false;
+// ================= 🎤 VOICE INPUT =================
+function startListening(type) {
 
-        recognition.start();
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        recognition.onstart = () => {
-          console.log("🎤 Listening...");
-        };
+  if (!SpeechRecognition) {
+    alert("Speech not supported");
+    return;
+  }
 
-        recognition.onresult = (event) => {
-          let spokenText = event.results[0][0].transcript;
+  const recognition = new SpeechRecognition();
 
-          if (type === "tamil") {
-            document.getElementById("tamilInput").value = spokenText;
-          } else {
-            document.getElementById("englishInput").value = spokenText;
-          }
-        };
+  recognition.lang = type === "tamil" ? "ta-IN" : "en-US";
 
-        recognition.onspeechend = () => {
-          recognition.stop();
-        };
+  recognition.start();
 
-        recognition.onerror = (event) => {
-          if (event.error === "no-speech") {
-            alert("No speech detected. Try again.");
-          } else if (event.error === "network") {
-            alert("Network error. Use Live Server + check internet.");
-          } else {
-            console.error("Error:", event.error);
-          }
-        };
-      }
+  recognition.onresult = async (event) => {
 
-      // ---------- FILTER ----------
-      let currentFilter = "all";
+    let spokenText = event.results[0][0].transcript;
 
-      function filterCategory(type) {
-        currentFilter = type;
-        renderCards();
-      }
+    // ================= TAMIL → ENGLISH =================
+    if (type === "tamil") {
 
-      // ---------- RENDER ----------
-      function renderCards() {
-        let container = document.getElementById("cardContainer");
-        let searchText = document
-          .getElementById("searchInput")
-          .value.toLowerCase();
+      document.getElementById("tamilInput").value = spokenText;
 
-        container.innerHTML = "";
+      let english = await translateText(spokenText, "ta", "en");
 
-        data.forEach((item) => {
-          if (
-            (currentFilter === "all" || item.type === currentFilter) &&
-            (item.tamil.includes(searchText) ||
-              item.english.toLowerCase().includes(searchText))
-          ) {
-            let card = document.createElement("div");
-            card.className = "card";
+      english = basicGrammarFix(english);
 
-            card.onclick = () => speakTamil(item.tamil);
+      document.getElementById("englishInput").value = english;
+    }
 
-            card.innerHTML = `
-                <div class="tamil">${item.tamil}</div>
-                <div class="english">${item.english}</div>
-            `;
+    // ================= ENGLISH → TAMIL =================
+    else {
 
-            container.appendChild(card);
-          }
-        });
-      }
+      let fixed = basicGrammarFix(spokenText);
 
-      // ---------- SPEECH ----------
-      function speakTamil(text) {
-        // Try Google TTS first
-        const url =
-          "https://translate.google.com/translate_tts?ie=UTF-8&q=" +
-          encodeURIComponent(text) +
-          "&tl=ta&client=tw-ob";
+      document.getElementById("englishInput").value = fixed;
 
-        const audio = new Audio(url);
+      let tamil = await translateText(fixed, "en", "ta");
 
-        audio.play().catch(() => {
-          // Fallback if blocked
-          let speech = new SpeechSynthesisUtterance(text);
-          speech.lang = "ta-IN";
-          speechSynthesis.speak(speech);
-        });
-      }
+      document.getElementById("tamilInput").value = tamil;
+    }
+  };
 
-      // ---------- SEARCH ----------
-      document
-        .getElementById("searchInput")
-        .addEventListener("input", renderCards);
+  recognition.onerror = (e) => {
+    console.log("Speech error:", e.error);
+  };
+}
 
-      // ---------- INITIAL LOAD ----------
-      renderCards();
-    </script>
-  </body>
+// ================= ADD =================
+function addItem() {
+
+  let tamil = document.getElementById("tamilInput").value.trim();
+  let english = document.getElementById("englishInput").value.trim();
+  let type = document.getElementById("typeInput").value;
+
+  if (!tamil || !english) {
+    alert("Enter both fields");
+    return;
+  }
+
+  data.push({ tamil, english, type });
+
+  saveData();
+  renderCards();
+
+  document.getElementById("tamilInput").value = "";
+  document.getElementById("englishInput").value = "";
+}
+
+// ================= FILTER =================
+let currentFilter = "all";
+
+function filterCategory(type) {
+  currentFilter = type;
+  renderCards();
+}
+
+// ================= RENDER =================
+function renderCards() {
+
+  let container = document.getElementById("cardContainer");
+  let search = document.getElementById("searchInput").value.toLowerCase();
+
+  container.innerHTML = "";
+
+  data.forEach((item, index) => {
+
+    if (
+      (currentFilter === "all" || item.type === currentFilter) &&
+      (item.tamil.includes(search) ||
+        item.english.toLowerCase().includes(search))
+    ) {
+
+      let card = document.createElement("div");
+      card.className = "card";
+
+      card.onclick = () => speak(item.tamil);
+
+      card.innerHTML = `
+        <div class="tamil">${item.tamil}</div>
+        <div class="english">${item.english}</div>
+
+        <button class="deleteBtn" onclick="deleteItem(${index})">
+          🗑️ Delete
+        </button>
+      `;
+
+      container.appendChild(card);
+    }
+  });
+}
+
+// ================= SPEAK =================
+function speak(text) {
+
+  let audio = new Audio(
+    "https://translate.google.com/translate_tts?ie=UTF-8&q=" +
+      encodeURIComponent(text) +
+      "&tl=ta&client=tw-ob"
+  );
+
+  audio.play().catch(() => {
+    let speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "ta-IN";
+    speechSynthesis.speak(speech);
+  });
+}
+
+// ================= SEARCH =================
+document.getElementById("searchInput").addEventListener("input", renderCards);
+
+// ================= INIT =================
+renderCards();
+
+</script>
+
+</body>
 </html>
