@@ -48,24 +48,35 @@
       padding: 10px;
     }
 
-    .card {
-      background: white;
-      padding: 15px;
-      width: fit-content;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-    }
+.card {
+  background: white;
+  padding: 15px;
+  width: 160px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 
-    .tamil {
-      font-size: 18px;
-      font-weight: bold;
-    }
+  /* NEW */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
 
-    .english {
-      color: gray;
-      font-size: 14px;
-    }
+.tamil {
+  font-size: 18px;
+  font-weight: bold;
+
+  /* NEW */
+  word-break: break-word;
+}
+
+.english {
+  color: gray;
+  font-size: 14px;
+
+  /* NEW */
+  word-break: break-word;
+}
 
     .deleteBtn {
       margin-top: 8px;
