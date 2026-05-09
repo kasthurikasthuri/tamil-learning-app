@@ -90,12 +90,40 @@
   color: gray;
   margin-top: 6px;
 }
+          #dashboardBox {
+        background: #fff;
+        padding: 10px;
+        margin: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      .listening {
+  background: red !important;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
   </style>
 </head>
 
 <body>
 
 <h1>📚 AI Tamil Learning App</h1>
+
+  <!-- DASHBOARD -->
+    <div id="dashboardBox"></div>
 
 <!-- INPUT -->
 <div class="controls">
@@ -340,6 +368,7 @@ function renderCards() {
       container.appendChild(card);
     }
   });
+  updateDashboard();
 }
 
 // ================= SPEAK =================
@@ -368,6 +397,17 @@ function speak(text) {
     timeStyle: "short"
   });
 }
+        // ================= DASHBOARD =================
+      function updateDashboard() {
+        let total = data.length;
+        let fav = data.filter((i) => i.favorite).length;
+        let num = data.filter((i) => i.type === "number").length;
+        let word = data.filter((i) => i.type === "word").length;
+        let sent = data.filter((i) => i.type === "sentence").length;
+
+        document.getElementById("dashboardBox").innerHTML =
+          `📊 Total: ${total} | 🔢 ${num} | 📖 ${word} | 📝 ${sent}`;
+      }
 
 // ================= SEARCH =================
 document.getElementById("searchInput").addEventListener("input", renderCards);
