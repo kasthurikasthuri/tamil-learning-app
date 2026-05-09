@@ -80,8 +80,11 @@
 
     .deleteBtn {
       margin-top: 8px;
-      background: red;
+      background: #ff4d4d;
     }
+    .deleteBtn:hover {
+    background: #e60000;
+}
     .time {
   font-size: 11px;
   color: gray;
@@ -185,7 +188,6 @@ function basicGrammarFix(text) {
     .trim();
 }
 
-// ================= 🎤 VOICE INPUT =================
 function startListening(type) {
 
   const SpeechRecognition =
@@ -200,39 +202,73 @@ function startListening(type) {
 
   recognition.lang = type === "tamil" ? "ta-IN" : "en-US";
 
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  // GET BUTTON
+  let buttons = document.querySelectorAll("button");
+
+  let micButton;
+
+  if (type === "tamil") {
+    micButton = buttons[0];
+  } else {
+    micButton = buttons[1];
+  }
+
   recognition.start();
 
+  // MIC ON
+  recognition.onstart = () => {
+    micButton.classList.add("listening");
+    micButton.innerText = "🎙 Listening...";
+  };
+
+  // RESULT
   recognition.onresult = async (event) => {
 
     let spokenText = event.results[0][0].transcript;
 
-    // ================= TAMIL → ENGLISH =================
     if (type === "tamil") {
 
       document.getElementById("tamilInput").value = spokenText;
 
       let english = await translateText(spokenText, "ta", "en");
 
-      english = basicGrammarFix(english);
-
       document.getElementById("englishInput").value = english;
-    }
 
-    // ================= ENGLISH → TAMIL =================
-    else {
+    } else {
 
-      let fixed = basicGrammarFix(spokenText);
+      document.getElementById("englishInput").value = spokenText;
 
-      document.getElementById("englishInput").value = fixed;
-
-      let tamil = await translateText(fixed, "en", "ta");
+      let tamil = await translateText(spokenText, "en", "ta");
 
       document.getElementById("tamilInput").value = tamil;
     }
   };
 
+  // MIC OFF
+  recognition.onend = () => {
+
+    micButton.classList.remove("listening");
+
+    if (type === "tamil") {
+      micButton.innerText = "🎤 Tamil";
+    } else {
+      micButton.innerText = "🎤 English";
+    }
+  };
+
   recognition.onerror = (e) => {
     console.log("Speech error:", e.error);
+
+    micButton.classList.remove("listening");
+
+    if (type === "tamil") {
+      micButton.innerText = "🎤 Tamil";
+    } else {
+      micButton.innerText = "🎤 English";
+    }
   };
 }
 
