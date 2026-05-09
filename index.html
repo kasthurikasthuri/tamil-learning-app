@@ -189,7 +189,7 @@ if (data.length === 0) {
 
 // ================= 🗑️ DELETE =================
 function deleteItem(index) {
-  if (confirm("Delete this item?")) {
+  if (confirm("Are You Sure to Delete this item?")) {
     data.splice(index, 1);
     saveData();
     renderCards();
@@ -364,7 +364,7 @@ function renderCards() {
         <div class="time">${item.createdAt || ""}</div>
 
         <button class="deleteBtn" onclick="deleteItem(${index})">
-          🗑️ Delete
+          🗑️
         </button>
       `;
 
