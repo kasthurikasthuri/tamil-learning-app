@@ -71,6 +71,11 @@
       margin-top: 8px;
       background: red;
     }
+    .time {
+  font-size: 11px;
+  color: gray;
+  margin-top: 6px;
+}
   </style>
 </head>
 
@@ -232,7 +237,12 @@ function addItem() {
     return;
   }
 
-  data.push({ tamil, english, type });
+  data.push({
+  tamil,
+  english,
+  type,
+  createdAt: getDateTime()
+});
 
   saveData();
   renderCards();
@@ -273,6 +283,7 @@ function renderCards() {
       card.innerHTML = `
         <div class="tamil">${item.tamil}</div>
         <div class="english">${item.english}</div>
+        <div class="time">${item.createdAt || ""}</div>
 
         <button class="deleteBtn" onclick="deleteItem(${index})">
           🗑️ Delete
@@ -297,6 +308,17 @@ function speak(text) {
     let speech = new SpeechSynthesisUtterance(text);
     speech.lang = "ta-IN";
     speechSynthesis.speak(speech);
+  });
+}
+
+  // ================= date =================
+  function getDateTime() {
+
+  let now = new Date();
+
+  return now.toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short"
   });
 }
 
